@@ -180,8 +180,9 @@ class DocumentProcessor:
             blocks = data.get('Blocks', [])
             grouped_content = self.group_related_blocks(blocks)
             
+            # Convert Enum to string for content stats
             content_stats = {
-                content_type: sum(1 for g in grouped_content if g['type'] == content_type)
+                content_type.name.lower(): sum(1 for g in grouped_content if g['type'] == content_type)
                 for content_type in ContentType
             }
 
@@ -252,12 +253,13 @@ def main():
                 
                 # Content distribution visualization
                 st.write("### Content Distribution")
-                dist_df = pd.DataFrame.from_dict(
-                    processed_data['metadata']['content_distribution'], 
-                    orient='index', 
-                    columns=['count']
-                )
-                st.bar_chart(dist_df)
+                if processed_data['metadata'].get('content_distribution'):
+                    dist_df = pd.DataFrame.from_dict(
+                        processed_data['metadata']['content_distribution'], 
+                        orient='index', 
+                        columns=['count']
+                    )
+                    st.bar_chart(dist_df)
                 
                 # Content preview by type
                 st.write("### Content Preview")
